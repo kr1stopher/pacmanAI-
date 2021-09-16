@@ -78,19 +78,8 @@ def depthFirstSearch(problem):
     w = Directions.WEST
     e = Directions.EAST
     n = Directions.NORTH
-    print("Start:", problem.getStartState())
-    a = problem.getStartState()
-    print(a, "\n")
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors((5,4)))
 
 
-
-    #from starting point s = problem.getStartState()
-    #chose one successor, chose its successor etc etc
-    #keep searching until exhausted or goal found
-    #stack, queue, priority queue from util functions avail
     open = [problem.getStartState()]
     closed = []
     moves = []
@@ -98,17 +87,16 @@ def depthFirstSearch(problem):
     routeMap = []
     parentMap = {}
     while (open != []):
-        current = open[len(open)-1]
-        parent = open[len(open)-1]
+        current = open[0]
         #if current is not a child -> remove last direction
         if (problem.isGoalState(current)):
-            print("I hit the goalllllllll")
             endGoal = current
             break;
             #return [s, s, w, s, w, w, s, w] #return the path to current
         else:
             children = problem.getSuccessors(current) #get the children of current
-            closed.append(open.pop()) #move the newly explored node to the closed section
+            closed.append(open.pop(0)) #move the newly explored node to the closed section
+            kidsToAdd = []
             for kid in children:  #do I need to reverse this
                 i=0
                 j =0
@@ -122,8 +110,72 @@ def depthFirstSearch(problem):
                         shouldAdd = False
                     j=j+1
                 if shouldAdd:
-                    open.append(kid[0])
+                    kidsToAdd.insert(0,kid[0]) #store children to be added
                     parentMap[kid[0]] = current, kid[1]
+                if (i== len(children)-1):
+                    pass
+                    #routeMap.append(kid[1])
+            for kids in kidsToAdd: #add children discovered to the  left side of open
+                open.insert(0, kids)
+
+    endGoal = (endGoal, "void") #keep everything same format
+    while (endGoal[0] != problem.getStartState()):
+        if (parentMap[endGoal[0]][1] == 'North'):
+            routeMap.insert(0,n)
+        if (parentMap[endGoal[0]][1] == 'South'):
+            routeMap.insert(0,s)
+        if (parentMap[endGoal[0]][1] == 'East'):
+            routeMap.insert(0,e)
+        if (parentMap[endGoal[0]][1] == 'West'):
+            routeMap.insert(0,w)
+        #routeMap.append(parentMap[endGoal[0]][1])
+        endGoal = parentMap[endGoal[0]]
+
+    return routeMap
+    #return [w, s, s, e, s, s, w, w, w, w]
+    #return  [s, s, w, s, w, w, s, w] #proper answer
+
+def breadthFirstSearch(problem):
+    from game import Directions
+    s = Directions.SOUTH
+    w = Directions.WEST
+    e = Directions.EAST
+    n = Directions.NORTH
+
+
+    #from starting point s = problem.getStartState()
+    #chose one successor, chose its successor etc etc
+    #keep searching until exhausted or goal found
+    #stack, queue, priority queue from util functions avail
+    open = [problem.getStartState()]
+    closed = []
+    routeMap = []
+    parentMap = {}
+    while (open != []):
+        current = open[0]
+
+        #if current is goal state exit the loop
+        if (problem.isGoalState(current)):
+            endGoal = current
+            break;
+        else:
+            children = problem.getSuccessors(current) #get the children of current
+            closed.append(open.pop(0)) #move the newly explored node to the closed section
+            for kid in children:
+                i=0
+                j =0
+                shouldAdd = True
+                while (open != [] and i<len(open)): #check to see if kid is already in open
+                    if (open[i] == kid[0]):
+                        shouldAdd = False
+                    i = i+1
+                while (closed != [] and j<len(closed)): #check to see if kid is already in closed
+                    if (closed[j] == kid[0]):
+                        shouldAdd = False
+                    j=j+1
+                if shouldAdd:  #add the kid to the right side of open if not already in open or closed
+                    open.append(kid[0])
+                    parentMap[kid[0]] = current, kid[1] #update parentMap
                 if (i== len(children)-1):
                     pass
                     #routeMap.append(kid[1])
@@ -131,73 +183,20 @@ def depthFirstSearch(problem):
     endGoal = (endGoal, "void") #keep everything same format
     while (endGoal[0] != problem.getStartState()):
         if (parentMap[endGoal[0]][1] == 'North'):
-            routeMap.append(n)
+            routeMap.insert(0,n)
         if (parentMap[endGoal[0]][1] == 'South'):
-            routeMap.append(s)
+            routeMap.insert(0,s)
         if (parentMap[endGoal[0]][1] == 'East'):
-            routeMap.append(e)
+            routeMap.insert(0,e)
         if (parentMap[endGoal[0]][1] == 'West'):
-            routeMap.append(w)
+            routeMap.insert(0,w)
         #routeMap.append(parentMap[endGoal[0]][1])
         endGoal = parentMap[endGoal[0]]
 
+    return routeMap
 
-    #need to reverse route map, can adjust to using a stack later
-    finalRoute = []
-    i = len(routeMap)-1
-    while (i>=0) :
-        finalRoute.append(routeMap[i])
-        i=i-1
-
-    return finalRoute
     #return [w, s, s, e, s, s, w, w, w, w]
     #return  [s, s, w, s, w, w, s, w] #proper answer
-    """
-    open  = [start]
-    closed = []
-    while open != []
-        remove leftmost state from open [x]
-            if  x =  goal return successor
-            else
-                generate children of x
-                put x to closed
-                discard children of x if already open or closed
-                put remaining children on open
-            end
-        end
-        return fail
-    end
-    """
-
-
-    """
-    Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-
-    "*** YOUR CODE HERE ***"
-    from game import Directions
-    s = Directions.SOUTH
-    w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-
-    util.raiseNotDefined()
-    """
-def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
