@@ -108,10 +108,7 @@ def depthFirstSearch(problem):
             #return [s, s, w, s, w, w, s, w] #return the path to current
         else:
             children = problem.getSuccessors(current) #get the children of current
-            print("the children are ", children)
             closed.append(open.pop()) #move the newly explored node to the closed section
-            print("open is ",open)
-            print("closed is ", closed)
             for kid in children:  #do I need to reverse this
                 i=0
                 j =0
@@ -126,29 +123,35 @@ def depthFirstSearch(problem):
                     j=j+1
                 if shouldAdd:
                     open.append(kid[0])
-                    print("tried to add a kid to open", open)
-                    parentMap[kid[0]] = current
+                    parentMap[kid[0]] = current, kid[1]
                 if (i== len(children)-1):
                     pass
                     #routeMap.append(kid[1])
-    print("end goal is ", endGoal)
-    print("the problem statement end goal is ", problem.isGoalState(endGoal))
-    print(parentMap[endGoal], " is the parent of endGoal")
-    """
-    while (endGoal != problem.getStartState):
-        children = problem.getSuccessors(parentMap[endGoal])
-        for kids in children:
-            if endGoal == kids[0]:
-                routeMap.append(kids[1])
-        endGoal = parentMap[endGoal]
-    """
+
+    endGoal = (endGoal, "void") #keep everything same format
+    while (endGoal[0] != problem.getStartState()):
+        if (parentMap[endGoal[0]][1] == 'North'):
+            routeMap.append(n)
+        if (parentMap[endGoal[0]][1] == 'South'):
+            routeMap.append(s)
+        if (parentMap[endGoal[0]][1] == 'East'):
+            routeMap.append(e)
+        if (parentMap[endGoal[0]][1] == 'West'):
+            routeMap.append(w)
+        #routeMap.append(parentMap[endGoal[0]][1])
+        endGoal = parentMap[endGoal[0]]
 
 
+    #need to reverse route map, can adjust to using a stack later
+    finalRoute = []
+    i = len(routeMap)-1
+    while (i>=0) :
+        finalRoute.append(routeMap[i])
+        i=i-1
 
-
-
-    print("the route map is \n", routeMap, "\n")
-    return  [s, s, w, s, w, w, s, w]
+    return finalRoute
+    #return [w, s, s, e, s, s, w, w, w, w]
+    #return  [s, s, w, s, w, w, s, w] #proper answer
     """
     open  = [start]
     closed = []
