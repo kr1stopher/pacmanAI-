@@ -79,28 +79,32 @@ def depthFirstSearch(problem):
     e = Directions.EAST
     n = Directions.NORTH
 
-
+    #open/closed lists per DFS search
     open = [problem.getStartState()]
     closed = []
-    moves = []
-    parent = problem.getStartState()
-    routeMap = []
-    parentMap = {}
+    routeMap = [] #to be returned as the answer
+    parentMap = {} #disctionary mapping parents (key) to their children including direction
+
     while (open != []):
         current = open[0]
-        #if current is not a child -> remove last direction
-        if (problem.isGoalState(current)):
+        if (problem.isGoalState(current)): #break if we have reached the end goal
             endGoal = current
             break;
-            #return [s, s, w, s, w, w, s, w] #return the path to current
         else:
             children = problem.getSuccessors(current) #get the children of current
-            closed.append(open.pop(0)) #move the newly explored node to the closed section
-            kidsToAdd = []
-            for kid in children:  #do I need to reverse this
+            closed.insert(0,open.pop(0)) #move the newly explored node to the closed section
+            for kid in children:
                 i=0
                 j =0
                 shouldAdd = True
+                """  #this wasn't working, replaced with while loop below
+                if kid in open:
+                    shouldAdd = False
+                if kid in closed:
+                    shouldAdd = False
+                """
+
+                #check to see if children of current are in open or closed
                 while (open != [] and i<len(open)):
                     if (open[i] == kid[0]):
                         shouldAdd = False
@@ -109,17 +113,18 @@ def depthFirstSearch(problem):
                     if (closed[j] == kid[0]):
                         shouldAdd = False
                     j=j+1
+
+                #add kids to open if not already in open or closed
                 if shouldAdd:
-                    kidsToAdd.insert(0,kid[0]) #store children to be added
-                    parentMap[kid[0]] = current, kid[1]
-                if (i== len(children)-1):
-                    pass
-                    #routeMap.append(kid[1])
-            for kids in kidsToAdd: #add children discovered to the  left side of open
-                open.insert(0, kids)
+                    open.insert(0,kid[0]) #insert to the left side of the list
+                    parentMap[kid[0]] = current, kid[1] #update parent map
+
 
     endGoal = (endGoal, "void") #keep everything same format
+
+    """ #updated while loop used below 
     while (endGoal[0] != problem.getStartState()):
+        print("here is the direction ", parentMap[endGoal[0]][1])
         if (parentMap[endGoal[0]][1] == 'North'):
             routeMap.insert(0,n)
         if (parentMap[endGoal[0]][1] == 'South'):
@@ -128,12 +133,17 @@ def depthFirstSearch(problem):
             routeMap.insert(0,e)
         if (parentMap[endGoal[0]][1] == 'West'):
             routeMap.insert(0,w)
-        #routeMap.append(parentMap[endGoal[0]][1])
+        endGoal = parentMap[endGoal[0]]
+        print("\n\n\n\n\n\n\n\n",endGoal[1])
+    """
+
+    #while loop to turn the parent map steps taken into routeMap then returned
+    while (endGoal[0] != problem.getStartState()):
+        routeMap.insert(0,parentMap[endGoal[0]][1])
         endGoal = parentMap[endGoal[0]]
 
     return routeMap
-    #return [w, s, s, e, s, s, w, w, w, w]
-    #return  [s, s, w, s, w, w, s, w] #proper answer
+
 
 def breadthFirstSearch(problem):
     from game import Directions
