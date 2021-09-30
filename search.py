@@ -73,17 +73,7 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-    print "Start:", problem.getStartState() ============(5,5)
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())   ============True
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())  ===========[((x1,y1),'South',1),((x2,y2),'West',1)]
-    """
-    "*** YOUR CODE HERE ***"
+
     from game import Directions
 
     open = util.Stack() #list of nodes to be explored
@@ -106,75 +96,46 @@ def depthFirstSearch(problem):
             children = problem.getSuccessors(current) #explore the current node
             for child in children:
                 node = child[0]
-                direction = child[1] #direction to get from parent to child
-                nextStep = currentRoute + [direction]
-                open.push(node)
-                route.push(nextStep)
+                nextMove = child[1] #direction to get from parent to child
+                nextStep = currentRoute + [nextMove]
+
+                if not child[0] in closed:
+                    open.push(node)
+                    route.push(nextStep)
 
     return 0 #if it reaches this far the problem did not find the goal state
 
 def breadthFirstSearch(problem):
     from game import Directions
-    s = Directions.SOUTH
-    w = Directions.WEST
-    e = Directions.EAST
-    n = Directions.NORTH
 
-
-    #from starting point s = problem.getStartState()
-    #chose one successor, chose its successor etc etc
-    #keep searching until exhausted or goal found
-    #stack, queue, priority queue from util functions avail
-    open = [problem.getStartState()]
+    #open, closed, and route
+    open = util.Queue()
+    route = util.Queue()
     closed = []
-    routeMap = []
-    parentMap = {}
-    while (open != []):
-        current = open[0]
 
-        #if current is goal state exit the loop
-        if (problem.isGoalState(current)):
-            endGoal = current
-            break;
-        else:
-            children = problem.getSuccessors(current) #get the children of current
-            closed.append(open.pop(0)) #move the newly explored current to the closed section
-            for kid in children:
-                i=0
-                j =0
-                shouldAdd = True
-                while (open != [] and i<len(open)): #check to see if kid is already in open
-                    if (open[i] == kid[0]):
-                        shouldAdd = False
-                    i = i+1
-                while (closed != [] and j<len(closed)): #check to see if kid is already in closed
-                    if (closed[j] == kid[0]):
-                        shouldAdd = False
-                    j=j+1
-                if shouldAdd:  #add the kid to the right side of open if not already in open or closed
-                    open.append(kid[0])
-                    parentMap[kid[0]] = current, kid[1] #update parentMap
-                if (i== len(children)-1):
-                    pass
-                    #routeMap.append(kid[1])
+    #initialize open and closed
+    open.push(problem.getStartState())
+    route.push([])
 
-    endGoal = (endGoal, "void") #keep everything same format
-    while (endGoal[0] != problem.getStartState()):
-        if (parentMap[endGoal[0]][1] == 'North'):
-            routeMap.insert(0,n)
-        if (parentMap[endGoal[0]][1] == 'South'):
-            routeMap.insert(0,s)
-        if (parentMap[endGoal[0]][1] == 'East'):
-            routeMap.insert(0,e)
-        if (parentMap[endGoal[0]][1] == 'West'):
-            routeMap.insert(0,w)
-        #routeMap.append(parentMap[endGoal[0]][1])
-        endGoal = parentMap[endGoal[0]]
+    while open:
+        current = open.pop()
+        currentRoute = route.pop()
 
-    return routeMap
+        if problem.isGoalState(current): #if we've reached the goal state return the route
+            return currentRoute
 
-    #return [w, s, s, e, s, s, w, w, w, w]
-    #return  [s, s, w, s, w, w, s, w] #proper answer
+        if not current in closed:
+            closed.append(current)
+            children = problem.getSuccessors(current)
+
+            for child in children: #explore the children of current and add to list
+                move = currentRoute + [child[1]]
+                node = child[0]
+                if not child[0] in closed:
+                    open.push(node)
+                    route.push(move)
+
+    return 0 #if we reach here no route was found
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""

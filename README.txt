@@ -1,9 +1,18 @@
+Author: Kris Swartzbaugh 
+CWID: 890939184 
+Email: kswartzb@csu.fullerton.edu 
+
+
 Summary:
 	Build general search algorithms and apply them to Pacman scenarios as he  attempts to nagivate his maze world. 
 
 
 
-Project Requirements:
+Submitted Contents: 
+	(1) README [this fill]
+	(2) search.py 
+		(a) depthFirstSearch alg 
+		(b) breadthFirstSearch alg
 	
 	
 Project Requirements:
