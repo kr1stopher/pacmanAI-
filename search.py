@@ -161,38 +161,42 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     cost = 0 #cost of reaching a point, starting with 0
     #queue must be ordered with f(p) = cost(p) + H(P)
     test = util.PriorityQueue()
-    PriorityQueue.push(test,1,1)
+    #PriorityQueue.push(test,1,1)
     test.push(2,2)
     #open = [start]
-    open = util.PriorityQueue
+    open = util.PriorityQueue()
     closed = {} #dict of closed nodes [keys] and their proirity values f(n) = g(n) + h(n)
     # route = util.PriorityQueue
     route = {} #dict where key will be node and value will be [[route], heuristic]
-    #add start state to open & route
-    priority = heuristic(problem.getStartState(), problem)
-    print(priority)
-    print("priority is above")
 
-    """
-    #open.push(problem.getStartState(), priority)
-    PriorityQueue.push(open, problem.getStartState(), priority)
-    route[problem.getStartState] = [[], priority]
+    #add start state to open & route
+    open.push(problem.getStartState(), heuristic(problem.getStartState(), problem))
+    route[problem.getStartState()] = [[], heuristic(problem.getStartState(), problem)]
+
+
 
     while (not open.isEmpty()): #while there are nodes left to explore
         current = open.pop() #take the item with the highest priority
         if (problem.isGoalState(current)): #if current = goal return path to current
-            return route.pop()
+            return route[current][0]
         children = problem.getSuccessors(current) #generate children of current
         for child in children:
             if child in route: #if already in open or closed
-                pass #update route as needed
+                pass #update route as needed (how will the heuristic be different)
             else: #first time a node has been encountered, add to open and route
-                childRoute = route[current]
+                print(problem.getStartState())
+                print(current)
+                #print(route)
+                print(type(heuristic(current, problem)))
+                print(problem.goal)
+                print("Info above")
+                print(route)
+                childRoute = route[current][0]
                 childRoute.append(child[1])
-                route[child] = childRoute
-            open.update(child[0], heuristic(child, problem)) #update or add child to priority queue
+                route[child[0]] = [childRoute, heuristic(child[0], problem)]
+            open.update(child[0], heuristic(child[0], problem)) #update or add child to priority queue
         closed[current] = heuristic(current, problem) #put current to closed
-    """
+
     #return fail
     util.raiseNotDefined()
 
