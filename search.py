@@ -152,29 +152,48 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    from util import PriorityQueue
     #heuristic = g(n) + h(n) -> g(n) = steps to reach that state, h(n) appoximate distance to goal state
     #treats frontier as a high priority queueu
     #selects the node on the frontier with lowest estimated total distance
 
-    open = util.PriorityQueue
+    open = util.PriorityQueue()
     cost = 0 #cost of reaching a point, starting with 0
     #queue must be ordered with f(p) = cost(p) + H(P)
-
-
+    test = util.PriorityQueue()
+    PriorityQueue.push(test,1,1)
+    test.push(2,2)
     #open = [start]
-    #closed = []
-    # while open != empty
-        #take leftmost from queue
-        #if current = goal return path to current
-        #else:
-            #generate children
-            #if not in open or closed: calculate f(p)
-            #if in open if the path saved in open was shorter reassign that one to currentRoute
-            #if already on closed -> if reached by a shorter path then
-                #remove state from closed
-                #add to end of open
-        #put current to closed
-    #return fail 
+    open = util.PriorityQueue
+    closed = {} #dict of closed nodes [keys] and their proirity values f(n) = g(n) + h(n)
+    # route = util.PriorityQueue
+    route = {} #dict where key will be node and value will be [[route], heuristic]
+    #add start state to open & route
+    priority = heuristic(problem.getStartState(), problem)
+    print(priority)
+    print("priority is above")
+
+    """
+    #open.push(problem.getStartState(), priority)
+    PriorityQueue.push(open, problem.getStartState(), priority)
+    route[problem.getStartState] = [[], priority]
+
+    while (not open.isEmpty()): #while there are nodes left to explore
+        current = open.pop() #take the item with the highest priority
+        if (problem.isGoalState(current)): #if current = goal return path to current
+            return route.pop()
+        children = problem.getSuccessors(current) #generate children of current
+        for child in children:
+            if child in route: #if already in open or closed
+                pass #update route as needed
+            else: #first time a node has been encountered, add to open and route
+                childRoute = route[current]
+                childRoute.append(child[1])
+                route[child] = childRoute
+            open.update(child[0], heuristic(child, problem)) #update or add child to priority queue
+        closed[current] = heuristic(current, problem) #put current to closed
+    """
+    #return fail
     util.raiseNotDefined()
 
 
