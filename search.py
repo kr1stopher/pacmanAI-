@@ -152,6 +152,29 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    #heuristic = g(n) + h(n) -> g(n) = steps to reach that state, h(n) appoximate distance to goal state
+    #treats frontier as a high priority queueu
+    #selects the node on the frontier with lowest estimated total distance
+
+    open = util.PriorityQueue
+    cost = 0 #cost of reaching a point, starting with 0
+    #queue must be ordered with f(p) = cost(p) + H(P)
+
+
+    #open = [start]
+    #closed = []
+    # while open != empty
+        #take leftmost from queue
+        #if current = goal return path to current
+        #else:
+            #generate children
+            #if not in open or closed: calculate f(p)
+            #if in open if the path saved in open was shorter reassign that one to currentRoute
+            #if already on closed -> if reached by a shorter path then
+                #remove state from closed
+                #add to end of open
+        #put current to closed
+    #return fail 
     util.raiseNotDefined()
 
 
