@@ -178,12 +178,14 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     while (not open.isEmpty()): #while there are nodes left to explore
         current = open.pop() #take the item with the highest priority
         if (problem.isGoalState(current)): #if current = goal return path to current
-            return route[current][0]
+            return route[current[0]][0]
         children = problem.getSuccessors(current) #generate children of current
         for child in children:
-            if child in route: #if already in open or closed
+            if child[0] in route: #if already in open or closed
+                print("child is in route" )
                 pass #update route as needed (how will the heuristic be different)
-            else: #first time a node has been encountered, add to open and route
+            elif not child[0] in route: #first time a node has been encountered, add to open and route
+                """
                 print(problem.getStartState())
                 print(current)
                 #print(route)
@@ -191,13 +193,19 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 print(problem.goal)
                 print("Info above")
                 print(route)
+                """
                 childRoute = route[current][0]
                 childRoute.append(child[1])
                 route[child[0]] = [childRoute, heuristic(child[0], problem)]
             open.update(child[0], heuristic(child[0], problem)) #update or add child to priority queue
         closed[current] = heuristic(current, problem) #put current to closed
+        print(open.count)
+        print("above is the length of open")
+        if  (open.count>10000):
+            break
 
     #return fail
+    return
     util.raiseNotDefined()
 
 
