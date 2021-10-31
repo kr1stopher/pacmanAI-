@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+import copy
 
 class SearchProblem:
     """
@@ -174,38 +175,48 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     route[problem.getStartState()] = [[], heuristic(problem.getStartState(), problem)]
 
 
-
+    i = 0
     while (not open.isEmpty()): #while there are nodes left to explore
         current = open.pop() #take the item with the highest priority
         if (problem.isGoalState(current)): #if current = goal return path to current
-            return route[current[0]][0]
+            print(route[current][0])
+            print(current)
+            print(problem.isGoalState(current))
+            print("above is the  goal route  returned ")
+            #return ['North', 'North', 'West', 'West']
+            return route[current][0]
         children = problem.getSuccessors(current) #generate children of current
         for child in children:
-            if child[0] in route: #if already in open or closed
-                print("child is in route" )
+            if child[0] in route: #if already in open or close
                 pass #update route as needed (how will the heuristic be different)
             elif not child[0] in route: #first time a node has been encountered, add to open and route
-                """
-                print(problem.getStartState())
-                print(current)
-                #print(route)
-                print(type(heuristic(current, problem)))
-                print(problem.goal)
-                print("Info above")
-                print(route)
-                """
-                childRoute = route[current][0]
+                route1 = copy.deepcopy(route)
+                childRoute = route1[current]
+                childRoute = childRoute[0]
+                if i == 0:
+                    print(current)
+                    print(route[current])
                 childRoute.append(child[1])
+
+
+                if i == 0:
+                    print(current)
+                    print(route[current])
+                    print("did it update?")
+                if i<5:
+                    print(current)
+                    print(route[current])
+                    print("above is current")
+                    print(child)
+                    print(childRoute)
+                    print('above is a child')
+                    i+=1
                 route[child[0]] = [childRoute, heuristic(child[0], problem)]
-            open.update(child[0], heuristic(child[0], problem)) #update or add child to priority queue
+                open.update(child[0], heuristic(child[0], problem)) #update or add child to priority queue
         closed[current] = heuristic(current, problem) #put current to closed
-        print(open.count)
-        print("above is the length of open")
-        if  (open.count>10000):
-            break
 
     #return fail
-    return
+    print("error should  not have reached")
     util.raiseNotDefined()
 
 
