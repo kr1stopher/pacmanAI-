@@ -172,7 +172,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
     #add start state to open & route
     open.push(problem.getStartState(), heuristic(problem.getStartState(), problem))
-    route[problem.getStartState()] = [[], heuristic(problem.getStartState(), problem)]
+    route[problem.getStartState()] = [[], heuristic(problem.getStartState(), problem),0]
 
 
     i = 0
@@ -187,32 +187,21 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             return route[current][0]
         children = problem.getSuccessors(current) #generate children of current
         for child in children:
+
             if child[0] in route: #if already in open or close
-                pass #update route as needed (how will the heuristic be different)
+                if route[current][2] < route[child[0]][2]-1: #if child has already been explored but a better route was found
+                    childRoute = copy.deepcopy(route[current])
+                    childRoute[0].append(child[1])
+                    route[child[0]] = [childRoute[0], heuristic(child[0], problem), childRoute[2]+1]
             elif not child[0] in route: #first time a node has been encountered, add to open and route
-                route1 = copy.deepcopy(route)
-                childRoute = route1[current]
-                childRoute = childRoute[0]
-                if i == 0:
-                    print(current)
-                    print(route[current])
-                childRoute.append(child[1])
-
-
-                if i == 0:
-                    print(current)
-                    print(route[current])
-                    print("did it update?")
-                if i<5:
-                    print(current)
-                    print(route[current])
-                    print("above is current")
-                    print(child)
-                    print(childRoute)
-                    print('above is a child')
-                    i+=1
-                route[child[0]] = [childRoute, heuristic(child[0], problem)]
+                #route1 = copy.deepcopy(route)
+                childRoute = copy.deepcopy(route[current])
+                #childRoute = route1[current]
+                #childRoute = childRoute[0]
+                childRoute[0].append(child[1])
+                route[child[0]] = [childRoute[0], heuristic(child[0], problem), childRoute[2]+1]
                 open.update(child[0], heuristic(child[0], problem)) #update or add child to priority queue
+
         closed[current] = heuristic(current, problem) #put current to closed
 
     #return fail
