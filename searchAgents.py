@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -40,6 +40,7 @@ from game import Actions
 import util
 import time
 import search
+import copy
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -288,6 +289,10 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.costFn = lambda x,y: 1
+        self.explored=[False,False,False,False] #list of corners to be visited True = corner was visited
+        self.startState=[self.startingPosition,self.explored]
+
 
     def getStartState(self):
         """
@@ -295,14 +300,15 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.startState # self.startState=(self.startingPosition,self.explored)
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state[1] == [True,True,True,True] #returns if all the corners have been visited
+
 
     def getSuccessors(self, state):
         """
@@ -325,6 +331,26 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            x,y = state[0] #current position
+            explored = state[1]
+            dx,dy = Actions.directionToVector(action) #action
+            nextx,nexty = int(x + dx),int(y + dy)
+            nextExplored = copy.deepcopy(explored)
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                isCorner = False #Set to true if we are in a corner
+                i = 0 # for indexing the corner if the new position is a corner
+                for corner in self.corners:
+                    if (nextx,nexty) == corner:
+                        isCorner = True
+                        break
+                    i+=1
+
+
+                if isCorner:
+                    nextExplored[i] = True # update the corner visited list
+
+                successors.append((((nextx,nexty),nextExplored),action,self.costFn(nextx,nexty))) # add this successor
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -340,7 +366,9 @@ class CornersProblem(search.SearchProblem):
             dx, dy = Actions.directionToVector(action)
             x, y = int(x + dx), int(y + dy)
             if self.walls[x][y]: return 999999
-        return len(actions)
+            cost += 1
+        return cost
+        #return len(actions)
 
 
 def cornersHeuristic(state, problem):

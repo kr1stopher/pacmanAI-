@@ -157,33 +157,17 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     #heuristic = g(n) + h(n) -> g(n) = steps to reach that state, h(n) appoximate distance to goal state
     #treats frontier as a high priority queueu
     #selects the node on the frontier with lowest estimated total distance
-
-    open = util.PriorityQueue()
-    cost = 0 #cost of reaching a point, starting with 0
-    #queue must be ordered with f(p) = cost(p) + H(P)
-    test = util.PriorityQueue()
-    #PriorityQueue.push(test,1,1)
-    test.push(2,2)
-    #open = [start]
     open = util.PriorityQueue()
     closed = {} #dict of closed nodes [keys] and their proirity values f(n) = g(n) + h(n)
-    # route = util.PriorityQueue
     route = {} #dict where key will be node and value will be [[route], heuristic]
 
     #add start state to open & route
     open.push(problem.getStartState(), heuristic(problem.getStartState(), problem))
     route[problem.getStartState()] = [[], heuristic(problem.getStartState(), problem),0]
 
-
-    i = 0
     while (not open.isEmpty()): #while there are nodes left to explore
         current = open.pop() #take the item with the highest priority
         if (problem.isGoalState(current)): #if current = goal return path to current
-            print(route[current][0])
-            print(current)
-            print(problem.isGoalState(current))
-            print("above is the  goal route  returned ")
-            #return ['North', 'North', 'West', 'West']
             return route[current][0]
         children = problem.getSuccessors(current) #generate children of current
         for child in children:
@@ -192,21 +176,15 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 if route[current][2] < route[child[0]][2]-1: #if child has already been explored but a better route was found
                     childRoute = copy.deepcopy(route[current])
                     childRoute[0].append(child[1])
-                    route[child[0]] = [childRoute[0], heuristic(child[0], problem), childRoute[2]+1]
+                    route[child[0]] = [childRoute[0], heuristic(child[0], problem), childRoute[2]+child[2]]
+                    open.update(child[0], childRoute[2]+child[2]+heuristic(child[0], problem))
             elif not child[0] in route: #first time a node has been encountered, add to open and route
-                #route1 = copy.deepcopy(route)
                 childRoute = copy.deepcopy(route[current])
-                #childRoute = route1[current]
-                #childRoute = childRoute[0]
                 childRoute[0].append(child[1])
-                route[child[0]] = [childRoute[0], heuristic(child[0], problem), childRoute[2]+1]
-                open.update(child[0], heuristic(child[0], problem)) #update or add child to priority queue
-
+                route[child[0]] = [childRoute[0], heuristic(child[0], problem), childRoute[2]+child[2]]
+                open.update(child[0], childRoute[2]+child[2]+heuristic(child[0], problem)) #update or add child to priority queue
         closed[current] = heuristic(current, problem) #put current to closed
 
-    #return fail
-    print("error should  not have reached")
-    util.raiseNotDefined()
 
 
 # Abbreviations
